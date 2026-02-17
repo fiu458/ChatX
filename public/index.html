@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ChatX</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    body {
+      font-family: Arial;
+      background: #2b2d31;
+      color: white;
+      text-align: center;
+    }
+    #messages {
+      height: 300px;
+      overflow-y: scroll;
+      border: 1px solid #444;
+      margin: 10px;
+      padding: 10px;
+    }
+    input {
+      padding: 8px;
+      margin: 5px;
+    }
+    button {
+      padding: 8px;
+      background: #5865f2;
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1>ChatX</h1>
+
+<div id="login">
+  <input id="username" placeholder="Įvesk vardą">
+  <button onclick="join()">Prisijungti</button>
+</div>
+
+<div id="chat" style="display:none;">
+  <div id="messages"></div>
+  <input id="messageInput" placeholder="Žinutė">
+  <button onclick="sendMessage()">Siųsti</button>
+</div>
+
+<script>
+  const socket = io("http://localhost:3000")
+
+  function join() {
+    const username = document.getElementById("username").value
+    if (!username) return
+    socket.emit("join", username)
+    document.getElementById("login").style.display = "none"
+    document.getElementById("chat").style.display = "block"
+  }
+
+  function sendMessage() {
+    const input = document.getElementById("messageInput")
+    const message = input.value
+    if (!message) return
+    socket.emit("chat message", { username: document.getElementById("username").value, message })
+    input.value = ""
+  }
+
+  socket.on("chat message", (data) => {
+    const messages = document.getElementById("messages")
+    const msg = document.createElement("div")
+    msg.textContent = data.username + ": " + data.message
+    messages.appendChild(msg)
+    messages.scrollTop = messages.scrollHeight
+  })
+</script>
+
+</body>
+</html>
