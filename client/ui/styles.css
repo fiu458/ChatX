@@ -1,0 +1,267 @@
+﻿@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+:root {
+  --bg: #edf4f1;
+  --panel: #f9fdfb;
+  --line: #d2dfd9;
+  --text: #0f2522;
+  --muted: #61756f;
+  --accent: #0f8b74;
+  --accent-2: #ff7a32;
+  --bubble-self: #d6f8ef;
+  --bubble-peer: #ffffff;
+  --shadow: 0 18px 60px rgba(10, 47, 39, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at 10% 0%, #d7ece4 0%, var(--bg) 45%),
+    linear-gradient(140deg, #edf4f1 0%, #e8f1ee 100%);
+  overflow: hidden;
+}
+
+.app-bg {
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.5) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px);
+  background-size: 36px 36px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.app-shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 16px;
+  padding: 18px;
+  height: 100vh;
+}
+
+.side-panel,
+.chat-panel {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(249, 253, 251, 0.88);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+}
+
+.side-panel {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand h1 {
+  margin: 0;
+  line-height: 1;
+}
+
+.brand p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.brand-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(150deg, var(--accent) 0%, #13af90 65%, var(--accent-2) 100%);
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label,
+small,
+#chatHint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+input,
+button {
+  font: inherit;
+  border-radius: 10px;
+}
+
+input {
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  background: #fbfffd;
+}
+
+input:focus {
+  border-color: var(--accent);
+  outline: 2px solid rgba(15, 139, 116, 0.2);
+}
+
+button {
+  border: none;
+  padding: 10px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--accent) 0%, #15a88a 100%);
+  color: #fff;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.users-card {
+  flex: 1;
+  min-height: 150px;
+}
+
+.users-card h3 {
+  margin: 0;
+}
+
+#users {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 280px;
+  overflow: auto;
+}
+
+#users li {
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: #f4fbf8;
+  font-size: 13px;
+}
+
+.chat-panel {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-width: 0;
+}
+
+.chat-header {
+  border-bottom: 1px solid var(--line);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header h2 {
+  margin: 0;
+}
+
+.chat-header p {
+  margin: 4px 0 0;
+}
+
+.chat-header a {
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.messages {
+  padding: 20px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.message {
+  max-width: min(640px, 75%);
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--bubble-peer);
+  animation: pop 160ms ease-out;
+}
+
+.message.self {
+  align-self: flex-end;
+  background: var(--bubble-self);
+}
+
+.message.system {
+  align-self: center;
+  background: #fff6ef;
+  border-color: #f4d9c6;
+  color: #6f4a2f;
+  font-size: 13px;
+}
+
+.message .meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.composer {
+  border-top: 1px solid var(--line);
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  gap: 10px;
+}
+
+@keyframes pop {
+  from {
+    transform: translateY(4px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 980px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .messages {
+    min-height: 50vh;
+  }
+}

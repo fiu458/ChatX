@@ -1,0 +1,62 @@
+﻿<!doctype html>
+<html lang="lt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatX</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-bg"></div>
+    <main class="app-shell">
+      <aside class="side-panel">
+        <div class="brand">
+          <div class="brand-badge">CX</div>
+          <div>
+            <h1>ChatX</h1>
+            <p>Realtime desktop chat</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <label for="serverUrl">Server URL</label>
+          <input id="serverUrl" type="text" placeholder="https://your-app.up.railway.app" />
+          <small id="serverStatus">Neprisijungta</small>
+        </div>
+
+        <div class="card">
+          <label for="username">Vartotojo vardas</label>
+          <input id="username" type="text" maxlength="24" placeholder="Pvz. Mantas" />
+          <label for="room">Kambarys</label>
+          <input id="room" type="text" maxlength="32" value="general" />
+          <button id="joinBtn">Prisijungti</button>
+        </div>
+
+        <div class="card users-card">
+          <h3>Online</h3>
+          <ul id="users"></ul>
+        </div>
+      </aside>
+
+      <section class="chat-panel">
+        <header class="chat-header">
+          <div>
+            <h2 id="roomTitle">#general</h2>
+            <p id="chatHint">Prisijunk, kad pradėtum chatintis</p>
+          </div>
+          <a href="https://railway.com" target="_blank" rel="noreferrer">Railway</a>
+        </header>
+
+        <div id="messages" class="messages"></div>
+
+        <form id="messageForm" class="composer">
+          <input id="messageInput" type="text" maxlength="1200" placeholder="Rašyk žinutę..." disabled />
+          <button type="submit" id="sendBtn" disabled>Siųsti</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="./renderer.js"></script>
+  </body>
+</html>
