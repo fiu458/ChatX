@@ -87,3 +87,33 @@ curl -X POST -H "x-admin-key: YOUR_ADMIN_KEY" -H "Content-Type: application/json
   -d "{\"newPassword\":\"NewSecure123\"}" \
   https://chatx-production-cc2e.up.railway.app/api/admin/users/USER_ID/reset-password
 ```
+
+## Interaktyvi admin konsole (1/2/3 meniu)
+
+Paleisk:
+
+```bash
+npm run admin:console
+```
+
+Skriptas veikia per meniu:
+
+- `1` Summary
+- `2` Users / login istorija
+- `3` Audit logs (register/login/messages/socket)
+- `4` Messages
+- `5` Reset user password
+- `6` Keisti serveri arba admin key
+- `0` Exit
+
+Numatyti env:
+
+```bash
+CHATX_ADMIN_SERVER=https://chatx-production-cc2e.up.railway.app
+CHATX_ADMIN_KEY=your-admin-key
+```
+
+Pastaba apie SSH:
+
+- Railway paprastai neduoda nuolatinio klasikinio SSH.
+- Vietoj to naudok Railway shell/CLI arba paleisk sia admin konsole savo kompiuteryje.

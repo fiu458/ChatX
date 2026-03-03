@@ -8,6 +8,7 @@
     "dev:server": "node server/index.js",
     "dev:desktop": "electron .",
     "start": "electron .",
+    "admin:console": "node scripts/admin-console.js",
     "build:installer": "set CSC_IDENTITY_AUTO_DISCOVERY=false&& electron-builder --win nsis",
     "build:unpacked": "set CSC_IDENTITY_AUTO_DISCOVERY=false&& electron-builder --dir"
   },
