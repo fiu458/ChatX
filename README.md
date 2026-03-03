@@ -117,3 +117,45 @@ Pastaba apie SSH:
 
 - Railway paprastai neduoda nuolatinio klasikinio SSH.
 - Vietoj to naudok Railway shell/CLI arba paleisk sia admin konsole savo kompiuteryje.
+
+## EXE build (Windows)
+
+```powershell
+cd C:\Users\User\Desktop\ChatX
+npm install
+npm run build:installer
+```
+
+Rezultatas:
+
+- `dist\ChatX Setup 2.0.0.exe`
+
+## Background mode
+
+Dabar ChatX veikia backgrounde:
+
+- Uzdarius langa, programa pasislepia i system tray (prie laikrodzio).
+- Tray meniu: `Open ChatX` arba `Quit`.
+
+## PowerShell prisijungimas be klaidu
+
+Naudok butent taip (Windows PowerShell):
+
+```powershell
+cd C:\Users\User\Desktop\ChatX
+$env:CHATX_ADMIN_SERVER = "https://chatx-production-cc2e.up.railway.app"
+$env:CHATX_ADMIN_KEY = "TAVO_ADMIN_RAKTAS"
+npm run admin:console
+```
+
+Jei nori patikrinti ar raktas veikia (be meniu):
+
+```powershell
+Invoke-RestMethod -Uri "https://chatx-production-cc2e.up.railway.app/api/admin/summary" -Headers @{"x-admin-key"="TAVO_ADMIN_RAKTAS"}
+```
+
+Jei "nieko nerodo":
+
+- Dažniausiai programa laukia tavo ivesto pasirinkimo `1`, `2`, `3`...
+- Ivesk skaiciu ir spausk `Enter`.
+- Jei rodo `Invalid admin key`, patikrink Railway `CHATX_ADMIN_KEY` reiksme.
