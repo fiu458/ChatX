@@ -1,17 +1,18 @@
-﻿const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const path = require("path");
 
-const DEFAULT_SERVER = process.env.CHATX_SERVER_URL || "http://localhost:3000";
+const DEFAULT_SERVER =
+  process.env.CHATX_SERVER_URL || "https://chatx-production-cc2e.up.railway.app";
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1280,
-    height: 820,
-    minWidth: 1000,
+    width: 1440,
+    height: 900,
+    minWidth: 1080,
     minHeight: 700,
     title: "ChatX",
     autoHideMenuBar: true,
-    backgroundColor: "#f2f6f5",
+    backgroundColor: "#0f111a",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -29,7 +30,10 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  ipcMain.handle("chatx:get-config", () => ({ defaultServerUrl: DEFAULT_SERVER }));
+  ipcMain.handle("chatx:get-config", () => ({
+    defaultServerUrl: DEFAULT_SERVER,
+    appVersion: app.getVersion(),
+  }));
 
   createWindow();
 

@@ -1,53 +1,52 @@
-﻿# ChatX
+# ChatX
 
-Moderni Electron chat programa su realtime serveriu (`socket.io`) ir Railway deploy palaikymu.
+`ChatX` yra Discord tipo Electron chat programa su Railway backend.
 
-## 1) Lokalus paleidimas (su terminalu)
+## Kas yra padaryta
+
+- Prisijungimas/registracija su `email + password`
+- Grupės (serveriai) ir tekstiniai kanalai
+- Draugų sistema su friend request/accept
+- DM (privatus chat tarp draugų)
+- Realtime žinutės per `socket.io`
+- Integruotas numatytas serveris: `https://chatx-production-cc2e.up.railway.app`
+- Windows installer (`.exe`) su `ChatX` ikona
+
+## Lokalios komandos
 
 ```bash
 npm install
 npm run dev:server
-```
-
-Naujame terminale:
-
-```bash
 npm run dev:desktop
 ```
 
-Serveris: `http://localhost:3000`
+## Railway deploy (backend)
 
-## 2) Railway deploy (jei nori online serverio)
-
-### Variantas A: Be terminalo (tik Railway UI)
-
-1. Ikelk projektą į GitHub.
-2. Railway: `New Project` -> `Deploy from GitHub repo` -> pasirink šį repo.
-3. `Variables` skiltyje nieko papildomai nereikia.
-4. Railway automatiškai naudos `railway.json` ir paleis `node server/index.js`.
-5. Nukopijuok Railway URL, pvz. `https://chatx-production.up.railway.app`.
-6. Electron programoje į `Server URL` įrašyk tą adresą ir spausk `Prisijungti`.
-
-### Variantas B: Su Railway CLI (jei turi terminalą)
-
-```bash
-npm i -g @railway/cli
-railway login
-railway init
-railway up
-```
-
-Po deploy gausi viešą URL, jį įrašyk į ChatX `Server URL` lauką.
-
-## 3) Ką rašyti, jei Railway prašo Start Command
+1. Į GitHub kelk visą projektą (be `node_modules`).
+2. Railway -> `New Project` -> `Deploy from GitHub repo`.
+3. Railway start komanda:
 
 ```bash
 node server/index.js
 ```
 
-## Programos struktūra
+4. Jei reikia, pridėk env:
 
-- `server/index.js` - realtime serveris
-- `client/electron/main.js` - Electron langas
-- `client/electron/preload.js` - saugus bridge į renderer
-- `client/ui/*` - modernus ChatX UI
+```bash
+CHATX_JWT_SECRET=very-long-random-secret
+```
+
+## Desktop installer build
+
+```bash
+npm install
+npm run build:installer
+```
+
+Rezultatas bus `dist` aplanke (`ChatX Setup ... .exe`).
+
+## Svarbios pastabos
+
+- `server/data.json` naudojamas kaip paprasta local DB failų saugykla.
+- Railway diskas gali būti laikinas (ephemeral), todėl rimtam production reikėtų Postgres.
+- Jei nori pakeisti serverio URL desktop app'e, naudok `CHATX_SERVER_URL` env paleidimo metu.
