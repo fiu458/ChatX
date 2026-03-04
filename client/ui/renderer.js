@@ -2,6 +2,7 @@ const state = {
   serverUrl: "",
   appVersion: "",
   token: localStorage.getItem("chatx_token") || "",
+  lastEmail: localStorage.getItem("chatx_last_email") || "",
   me: null,
   socket: null,
   groups: [],
@@ -30,6 +31,7 @@ const els = {
   registerName: document.getElementById("registerName"),
   registerEmail: document.getElementById("registerEmail"),
   registerPassword: document.getElementById("registerPassword"),
+  resendVerificationBtn: document.getElementById("resendVerificationBtn"),
   serverBadge: document.getElementById("serverBadge"),
   homeButton: document.getElementById("homeButton"),
   serverList: document.getElementById("serverList"),
@@ -147,7 +149,9 @@ async function api(path, options = {}) {
 
   if (!response.ok) {
     const message = payload?.error || `HTTP ${response.status}`;
-    throw new Error(message);
+    const error = new Error(message);
+    error.code = payload?.code || null;
+    throw error;
   }
 
   return payload;
@@ -775,6 +779,13 @@ function setToken(token) {
   }
 }
 
+function setLastEmail(email) {
+  state.lastEmail = String(email || "").trim();
+  if (state.lastEmail) {
+    localStorage.setItem("chatx_last_email", state.lastEmail);
+  }
+}
+
 function resetStateForLogout() {
   disconnectSocket();
   setToken("");
@@ -819,18 +830,25 @@ async function onLoginSubmit(event) {
   event.preventDefault();
 
   try {
+    const email = els.loginEmail.value.trim();
     const payload = await api("/api/auth/login", {
       method: "POST",
       body: {
-        email: els.loginEmail.value,
+        email,
         password: els.loginPassword.value,
       },
     });
 
+    setLastEmail(email);
     els.loginPassword.value = "";
     await handleAuthSuccess(payload);
     showToast("Prisijungta");
   } catch (error) {
+    if (error.code === "EMAIL_NOT_VERIFIED") {
+      showToast("El. paštas nepatvirtintas. Spausk \"Siųsti patvirtinimą dar kartą\".", true);
+      return;
+    }
+
     showToast(error.message, true);
   }
 }
@@ -839,18 +857,47 @@ async function onRegisterSubmit(event) {
   event.preventDefault();
 
   try {
+    const email = els.registerEmail.value.trim();
     const payload = await api("/api/auth/register", {
       method: "POST",
       body: {
         displayName: els.registerName.value,
-        email: els.registerEmail.value,
+        email,
         password: els.registerPassword.value,
       },
     });
 
     els.registerPassword.value = "";
-    await handleAuthSuccess(payload);
-    showToast("Paskyra sukurta");
+    setLastEmail(email);
+    setAuthMode("login");
+    els.loginEmail.value = email;
+    showToast(payload.message || "Paskyra sukurta. Patikrink el. paštą.");
+
+    if (payload.verificationPreviewUrl) {
+      window.open(payload.verificationPreviewUrl, "_blank");
+    }
+  } catch (error) {
+    showToast(error.message, true);
+  }
+}
+
+async function onResendVerification() {
+  const email = (els.loginEmail.value || state.lastEmail || "").trim();
+  if (!email) {
+    showToast("Įrašyk el. paštą", true);
+    return;
+  }
+
+  try {
+    const payload = await api("/api/auth/resend-verification", {
+      method: "POST",
+      body: { email },
+    });
+
+    showToast(payload.message || "Patvirtinimo laiškas išsiųstas.");
+    if (payload.verificationPreviewUrl) {
+      window.open(payload.verificationPreviewUrl, "_blank");
+    }
   } catch (error) {
     showToast(error.message, true);
   }
@@ -958,6 +1005,7 @@ function bindEvents() {
   els.showRegisterBtn.addEventListener("click", () => setAuthMode("register"));
   els.loginForm.addEventListener("submit", onLoginSubmit);
   els.registerForm.addEventListener("submit", onRegisterSubmit);
+  els.resendVerificationBtn.addEventListener("click", onResendVerification);
 
   els.homeButton.addEventListener("click", async () => {
     state.sidebarMode = "friends";
@@ -1013,6 +1061,7 @@ async function init() {
 
   els.serverBadge.textContent = `Serveris: ${state.serverUrl}`;
   els.appVersion.textContent = state.appVersion;
+  els.loginEmail.value = state.lastEmail;
 
   if (!state.token) {
     setViewAuthenticated(false);

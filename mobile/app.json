@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "ChatX",
+    "slug": "chatx-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "../build/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "../build/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f1420"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.chatx.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "../build/icon.png",
+        "backgroundColor": "#0f1420"
+      }
+    },
+    "extra": {
+      "chatxServerUrl": "https://chatx-production-cc2e.up.railway.app"
+    }
+  }
+}

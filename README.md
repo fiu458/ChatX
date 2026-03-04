@@ -1,18 +1,20 @@
 # ChatX
 
-`ChatX` yra Discord tipo Electron chat programa su Railway backend.
+ChatX is a desktop Electron chat app with a Railway backend.
 
-## Kas yra padaryta
+## Features
 
-- Prisijungimas/registracija su `email + password`
-- Grupės (serveriai) ir tekstiniai kanalai
-- Draugų sistema su friend request/accept
-- DM (privatus chat tarp draugų)
-- Realtime žinutės per `socket.io`
-- Integruotas numatytas serveris: `https://chatx-production-cc2e.up.railway.app`
-- Windows installer (`.exe`) su `ChatX` ikona
+- Email + password account system
+- Email verification flow (register -> verify -> login)
+- Group servers and text channels
+- Friend requests and DM chat
+- Realtime messaging with Socket.IO
+- Desktop app installer (.exe)
+- React Native mobile app project (Expo) with APK build profile
 
-## Lokalios komandos
+## Desktop app (Electron)
+
+Run locally:
 
 ```bash
 npm install
@@ -20,142 +22,79 @@ npm run dev:server
 npm run dev:desktop
 ```
 
-## Railway deploy (backend)
+Build Windows installer:
 
-1. Į GitHub kelk visą projektą (be `node_modules`).
-2. Railway -> `New Project` -> `Deploy from GitHub repo`.
-3. Railway start komanda:
+```bash
+npm install
+npm run build:installer
+```
+
+Installer output:
+
+- `dist/ChatX Setup 2.0.0.exe`
+
+## Railway backend deploy
+
+1. Push the project to GitHub.
+2. Railway -> New Project -> Deploy from GitHub repo.
+3. Start command:
 
 ```bash
 node server/index.js
 ```
 
-4. Jei reikia, pridėk env:
+4. Required env vars:
 
 ```bash
 CHATX_JWT_SECRET=very-long-random-secret
-CHATX_ADMIN_KEY=very-long-admin-key
+CHATX_PUBLIC_BASE_URL=https://chatx-production-cc2e.up.railway.app
 ```
 
-## Desktop installer build
+## Email verification setup (SMTP)
+
+Add SMTP variables in Railway:
 
 ```bash
+SMTP_HOST=smtp.yourprovider.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_user
+SMTP_PASS=your_password
+SMTP_FROM="ChatX <no-reply@yourdomain.com>"
+```
+
+Notes:
+
+- If SMTP is configured, verification email is sent automatically.
+- If SMTP is missing, API returns a temporary `verificationPreviewUrl` for testing.
+
+## Mobile app (React Native / Expo)
+
+Folder:
+
+- `mobile/`
+
+Install and run:
+
+```bash
+cd mobile
 npm install
-npm run build:installer
+npm run start
 ```
 
-Rezultatas bus `dist` aplanke (`ChatX Setup ... .exe`).
-
-## Svarbios pastabos
-
-- `server/data.json` naudojamas kaip paprasta local DB failų saugykla.
-- Railway diskas gali būti laikinas (ephemeral), todėl rimtam production reikėtų Postgres.
-- Jei nori pakeisti serverio URL desktop app'e, naudok `CHATX_SERVER_URL` env paleidimo metu.
-
-## Admin monitoring (registracijos, login, žinutės)
-
-`CHATX_ADMIN_KEY` leidžia pasiekti admin API. Slaptažodžiai plaintext formatu nerodomi.
-
-### Gauti suvestinę
+Build Android APK (Expo EAS cloud build):
 
 ```bash
-curl -H "x-admin-key: YOUR_ADMIN_KEY" https://chatx-production-cc2e.up.railway.app/api/admin/summary
+cd mobile
+npm install -g eas-cli
+npx eas login
+npm run build:apk
 ```
 
-### Vartotojai ir login istorija
+APK build profile is already configured in `mobile/eas.json` (`preview` -> `apk`).
 
-```bash
-curl -H "x-admin-key: YOUR_ADMIN_KEY" https://chatx-production-cc2e.up.railway.app/api/admin/users
-```
+## Important notes
 
-### Audit įvykiai (register/login/message/socket)
-
-```bash
-curl -H "x-admin-key: YOUR_ADMIN_KEY" "https://chatx-production-cc2e.up.railway.app/api/admin/audit?limit=200"
-```
-
-### Visos žinutės (group + dm)
-
-```bash
-curl -H "x-admin-key: YOUR_ADMIN_KEY" "https://chatx-production-cc2e.up.railway.app/api/admin/messages?kind=all&limit=200"
-```
-
-### Jei vartotojas pamiršo slaptažodį (admin reset)
-
-```bash
-curl -X POST -H "x-admin-key: YOUR_ADMIN_KEY" -H "Content-Type: application/json" \
-  -d "{\"newPassword\":\"NewSecure123\"}" \
-  https://chatx-production-cc2e.up.railway.app/api/admin/users/USER_ID/reset-password
-```
-
-## Interaktyvi admin konsole (1/2/3 meniu)
-
-Paleisk:
-
-```bash
-npm run admin:console
-```
-
-Skriptas veikia per meniu:
-
-- `1` Summary
-- `2` Users / login istorija
-- `3` Audit logs (register/login/messages/socket)
-- `4` Messages
-- `5` Reset user password
-- `6` Keisti serveri arba admin key
-- `0` Exit
-
-Numatyti env:
-
-```bash
-CHATX_ADMIN_SERVER=https://chatx-production-cc2e.up.railway.app
-CHATX_ADMIN_KEY=your-admin-key
-```
-
-Pastaba apie SSH:
-
-- Railway paprastai neduoda nuolatinio klasikinio SSH.
-- Vietoj to naudok Railway shell/CLI arba paleisk sia admin konsole savo kompiuteryje.
-
-## EXE build (Windows)
-
-```powershell
-cd C:\Users\User\Desktop\ChatX
-npm install
-npm run build:installer
-```
-
-Rezultatas:
-
-- `dist\ChatX Setup 2.0.0.exe`
-
-## Background mode
-
-Dabar ChatX veikia backgrounde:
-
-- Uzdarius langa, programa pasislepia i system tray (prie laikrodzio).
-- Tray meniu: `Open ChatX` arba `Quit`.
-
-## PowerShell prisijungimas be klaidu
-
-Naudok butent taip (Windows PowerShell):
-
-```powershell
-cd C:\Users\User\Desktop\ChatX
-$env:CHATX_ADMIN_SERVER = "https://chatx-production-cc2e.up.railway.app"
-$env:CHATX_ADMIN_KEY = "TAVO_ADMIN_RAKTAS"
-npm run admin:console
-```
-
-Jei nori patikrinti ar raktas veikia (be meniu):
-
-```powershell
-Invoke-RestMethod -Uri "https://chatx-production-cc2e.up.railway.app/api/admin/summary" -Headers @{"x-admin-key"="TAVO_ADMIN_RAKTAS"}
-```
-
-Jei "nieko nerodo":
-
-- Dažniausiai programa laukia tavo ivesto pasirinkimo `1`, `2`, `3`...
-- Ivesk skaiciu ir spausk `Enter`.
-- Jei rodo `Invalid admin key`, patikrink Railway `CHATX_ADMIN_KEY` reiksme.
+- Local DB is file based (`server/data.json`).
+- On Railway, file storage can be ephemeral. For stable production data use PostgreSQL.
+- Desktop app keeps the session token locally, so account stays logged in between launches.

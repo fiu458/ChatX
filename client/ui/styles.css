@@ -177,6 +177,13 @@ input:focus {
   color: #09101f;
 }
 
+.auth-form .secondary-btn {
+  margin-top: 6px;
+  background: #1c2840;
+  color: #dce5ff;
+  font-weight: 600;
+}
+
 #serverBadge {
   display: block;
   margin-top: 14px;
